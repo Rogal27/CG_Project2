@@ -1,0 +1,320 @@
+﻿<Window x:Class="GKProjekt2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GKProjekt2"
+        mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+        Title="{Binding Source={x:Static local:Globals.WindowName}, Mode=OneWay}" 
+        Height="auto" Width="auto" SizeToContent="WidthAndHeight" 
+        Background="#EBEBEB" ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
+        MinWidth="500" MinHeight="500"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <local:FillingModeConverter x:Key="FillingModeConverter"/>
+        <local:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <local:VectorNModeConverter x:Key="VectorNModeConverter"/>
+        <Style x:Key="GridStyle" TargetType="Grid">
+            <Setter Property="MinHeight" Value="400"/>
+            <Setter Property="MinWidth" Value="400"/>
+        </Style>
+        <Style x:Key="CanvasStyle" TargetType="Canvas">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="30,30,0,30"/>
+            <Setter Property="Width" Value="auto"/>
+            <Setter Property="Height" Value="auto"/>
+            <Setter Property="MinWidth" Value="400"/>
+            <Setter Property="MinHeight" Value="400"/>
+            <Setter Property="Panel.ZIndex" Value="20"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="BorderStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="BorderBrush" Value="DarkGray"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Panel.ZIndex" Value="30"/>
+        </Style>
+        <Style x:Key="StackPanelStyle" TargetType="StackPanel">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="30,30,30,30"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+        </Style>
+        <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="Padding" Value="10,10,10,10"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="BorderBrush" Value="#476780"/>
+            <Setter Property="Background" Value="#E8E8E8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="7"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style x:Key="GridSizeTextBox" TargetType="TextBox">
+            <Setter Property="Margin" Value="8,0,8,0"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="40"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="MaxLength" Value="3"/>
+        </Style>
+        <Style x:Key="FactorTextBlock" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Slider">
+            <Setter Property="Margin" Value="10,5,0,5"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <!--<Setter Property="VerticalContentAlignment" Value="Center"/>-->
+        </Style>
+        <Style x:Key="BorderInColorComboBox" TargetType="Border">
+            <Setter Property="Width" Value="12"/>
+            <Setter Property="Height" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style x:Key="DrawButton" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    <Grid Name="MainGrid" Style="{StaticResource GridStyle}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="280"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" BorderThickness="0,0,2,0" BorderBrush="#476780">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">            
+                <Label VerticalAlignment="Center" VerticalContentAlignment="Center">
+                    <Canvas Name="MainCanvas" Style="{StaticResource CanvasStyle}" Loaded="MainCanvas_Loaded" MouseMove="MainCanvas_MouseMove">
+
+                    </Canvas>
+                </Label>            
+            </ScrollViewer>
+        </Border>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" Background="#F3F3F3">
+                <!--<Border BorderThickness="2,0,0,0" BorderBrush="#476780">-->
+                    <StackPanel Style="{StaticResource StackPanelStyle}">
+                        <!--Wymiary siatki-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Wymiary siatki"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <WrapPanel HorizontalAlignment="Center">
+                                    <TextBox Style="{StaticResource GridSizeTextBox}">
+                                        <TextBox.Text>
+                                            <Binding Path="GridRows" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay">
+                                                <Binding.ValidationRules>
+                                                    <local:GridSizeValidationRule/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <TextBox.ToolTip>
+                                            <Binding RelativeSource="{RelativeSource Mode=Self}" Path="(Validation.Errors)[0].ErrorContent"/>
+                                        </TextBox.ToolTip>
+                                    </TextBox>
+                                    <TextBlock Text="x" VerticalAlignment="Center"/>
+                                    <TextBox Style="{StaticResource GridSizeTextBox}">
+                                        <TextBox.Text>
+                                            <Binding Path="GridColumns" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay">
+                                                <Binding.ValidationRules>
+                                                    <local:GridSizeValidationRule/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <TextBox.ToolTip>
+                                            <Binding RelativeSource="{RelativeSource Mode=Self}" Path="(Validation.Errors)[0].ErrorContent"/>
+                                        </TextBox.ToolTip>
+                                    </TextBox>
+                                </WrapPanel>
+                                <Button Content="Ustaw siatkę" Margin="30,12,30,4" Click="SetGridSizeButton_Click"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <!--Wektor L-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Wektor L"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <RadioButton Content="L=[0,0,1]" IsChecked="{Binding IsDefaultVectorL, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                <RadioButton Content="Zmienny"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <!--Wektor N-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Wektor N"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <TextBlock Text="Tekstura:" Margin="10,0,0,0"/>
+                                <RadioButton Name="VectorNRadioButton" Click="VectorNFileRadioButton_Click"
+                                         IsChecked="{Binding IsTexturedVectorN, Converter={StaticResource VectorNModeConverter}, ConverterParameter=NormalMap, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <RadioButton.Content>
+                                        <Button Content="Wybierz plik" Margin="25,0,0,0" Padding="7,3,7,3" Click="VectorNFileButton_Click"
+                                            IsEnabled="{Binding ElementName=VectorNRadioButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </RadioButton.Content>
+                                </RadioButton>
+                                <TextBlock Text="Stały:" Margin="10,0,0,0"/>
+                                <RadioButton Content="N=[0,0,1]" 
+                                             IsChecked="{Binding IsTexturedVectorN, Converter={StaticResource VectorNModeConverter}, ConverterParameter=Default, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                <RadioButton Content="Bąbelek"
+                                         IsChecked="{Binding IsTexturedVectorN, Converter={StaticResource VectorNModeConverter}, ConverterParameter=Bubble, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <!--Kolor swiatla-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Kolor światła"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <RadioButton Content="L=[1,1,1]" IsChecked="{Binding IsDefaultLightColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                <RadioButton Name="LightColorButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                    <RadioButton.Content>
+                                        <ComboBox Name="LightColorComboBox" SelectionChanged="LightColorComboBox_SelectionChanged"
+                                              IsEnabled="{Binding ElementName=LightColorButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Grid.Column="0" Style="{StaticResource BorderInColorComboBox}">
+                                                            <Rectangle Fill="{Binding color, Converter={StaticResource ColorToBrushConverter}}"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="1" Margin="5,0,0,0"
+                                                           Text="{Binding Name}"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </RadioButton.Content>
+                                </RadioButton>
+                            </StackPanel>
+                        </GroupBox>
+                        <!--wypelnienie planszy-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Wypełnienie planszy"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <TextBlock Text="Tekstura:" Margin="10,0,0,0"/>
+                                <RadioButton Name="FillTextureRadioButton" Click="GridTextureFileRadioButton_Click"
+                                         IsChecked="{Binding IsTextureFill, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <RadioButton.Content>
+                                        <Button Content="Wybierz plik" Margin="25,0,0,0" Padding="7,3,7,3" Click="GridTextureFileButton_Click"
+                                            IsEnabled="{Binding ElementName=FillTextureRadioButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </RadioButton.Content>
+                                </RadioButton>
+                                <TextBlock Text="Kolor:" Margin="10,0,0,0"/>
+                                <RadioButton Name="FillColorButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                         IsChecked="{Binding IsTextureFill, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolConverter}, Mode=OneWay}">
+                                    <RadioButton.Content>
+                                        <ComboBox Name="FillColorComboBox" SelectionChanged="FillColorComboBox_SelectionChanged"
+                                              IsEnabled="{Binding ElementName=FillColorButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Grid.Column="0" Style="{StaticResource BorderInColorComboBox}">
+                                                            <Rectangle Fill="{Binding color, Converter={StaticResource ColorToBrushConverter}}"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="1" Margin="5,0,0,0"
+                                                           Text="{Binding Name}"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </RadioButton.Content>
+                                </RadioButton>
+                            </StackPanel>
+                        </GroupBox>
+                        <!--metoda wypelnienia-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Metoda wypełnienia"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <RadioButton IsChecked="{Binding fillingMode, Converter={StaticResource FillingModeConverter}, ConverterParameter=Direct, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <TextBlock Text="Metoda bezpośrednia" TextWrapping="WrapWithOverflow"/>
+                                </RadioButton>
+                                <RadioButton IsChecked="{Binding fillingMode, Converter={StaticResource FillingModeConverter}, ConverterParameter=Fast, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <TextBlock Text="Metoda szybka" TextWrapping="WrapWithOverflow"/>
+                                </RadioButton>
+                                <RadioButton IsChecked="{Binding fillingMode, Converter={StaticResource FillingModeConverter}, ConverterParameter=Hybrid, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <TextBlock Text="Metoda hybrydowa" TextWrapping="WrapWithOverflow"/>
+                                </RadioButton>
+                            </StackPanel>
+                        </GroupBox>
+                        <!--wspolczynniki-->
+                        <GroupBox Style="{StaticResource GroupBoxStyle}">
+                            <GroupBox.Header>
+                                <TextBlock Text="Współczynniki"/>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <RadioButton Content="Losowo" IsChecked="{Binding RandomFactors, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                <RadioButton Name="OwnFactorsButton" Content="Własne"/>
+                                <Grid Name="FactorsGrid" Margin="5" IsEnabled="{Binding ElementName=OwnFactorsButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Kd:" Grid.Row="0" Grid.Column="0" Style="{StaticResource FactorTextBlock}"/>
+                                    <TextBlock Text="Ks:" Grid.Row="1" Grid.Column="0" Style="{StaticResource FactorTextBlock}"/>
+                                    <TextBlock Text="m:" Grid.Row="2" Grid.Column="0" Style="{StaticResource FactorTextBlock}"/>
+                                    <Slider Minimum="0" Maximum="100" SmallChange="5" LargeChange="10" Value="{Binding KdFactor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                Cursor="Hand" Grid.Row="0" Grid.Column="1"/>
+                                    <Slider Minimum="0" Maximum="100" SmallChange="5" LargeChange="10" Value="{Binding KsFactor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                Cursor="Hand" Grid.Row="1" Grid.Column="1"/>
+                                    <Slider Minimum="1" Maximum="100" SmallChange="5" LargeChange="10" Value="{Binding MFactor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                Cursor="Hand" Grid.Row="2" Grid.Column="1"/>
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                <!--</Border>-->
+            </ScrollViewer>
+            <Border Grid.Row="1" BorderThickness="0,2,0,0" BorderBrush="#476780">
+                <StackPanel  Style="{StaticResource StackPanelStyle}">
+                    <Button Content="Rysuj" Style="{StaticResource DrawButton}" Click="DrawButton_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
